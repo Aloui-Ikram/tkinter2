@@ -1,0 +1,68 @@
+from calendar import c
+from concurrent.futures import thread
+from msilib.schema import ListBox
+from tkinter import *
+import threading
+
+fenetre = Tk();
+fenetre.title("Feu tricolor");
+fenetre.configure(width=400, height=500)
+
+myCanvas = Canvas(fenetre, width=500, height=500, bg="white")
+myCanvas.pack()
+
+redLight = myCanvas.create_oval(300, 100, 250, 150, fill="green")
+yellowLight = myCanvas.create_oval(300, 175, 250, 225, fill="white")
+greenLight = myCanvas.create_oval(300, 250, 250, 300, fill="white")
+
+listBox = Listbox(fenetre)
+listBox.insert(1,0.05)
+listBox.insert(2,25)
+listBox.insert(3,50)
+listBox.insert(4,75)
+listBox.insert(5,100)
+listBox.insert(6,200)
+listBox.insert(7,250)
+listBox.insert(8,300)
+listBox.place(x=20, y=20)
+
+timer = None;
+state = 0;
+
+def initialize():
+    global timer;
+    timer = threading.Timer(listBox.get(listBox.curselection()), horloge)
+    timer.start()
+
+def horloge():
+    global timer
+    global state
+    state = (state + 1) % 3
+    if(state == 0):
+        myCanvas.create_oval(300, 100, 250, 150, fill="green")
+        myCanvas.create_oval(300, 175, 250, 225, fill="white")
+        myCanvas.create_oval(300, 250, 250, 300, fill="white")
+    elif (state == 1):
+        myCanvas.create_oval(300, 100, 250, 150, fill="white")
+        myCanvas.create_oval(300, 175, 250, 225, fill="yellow")
+        myCanvas.create_oval(300, 250, 250, 300, fill="white")
+    else:
+        myCanvas.create_oval(300, 100, 250, 150, fill="white")
+        myCanvas.create_oval(300, 175, 250, 225, fill="white")
+        myCanvas.create_oval(300, 250, 250, 300, fill="red")
+    timer = threading.Timer(listBox.get(listBox.curselection()), horloge)
+    timer.start()
+    
+    
+def quitter():
+    global timer
+    if (timer):
+        timer.cancel();
+
+test = Button(fenetre, text="Test", command=initialize, font=("times", 14, "normal"))
+test.place(x=400, y=20)
+
+test = Button(fenetre, text="Quitter", command=quitter, font=("times", 14, "normal"))
+test.place(x=400, y=60)
+
+fenetre.mainloop()
